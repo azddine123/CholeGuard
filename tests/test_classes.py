@@ -31,3 +31,11 @@ def test_remap_preserves_shape_and_dtype():
     out = remap_cholecseg_mask(rgb)
     assert out.shape == (5, 6) and out.dtype == np.uint8
     assert out[0, 0] == 2
+
+
+def test_endoscapes_semseg_ids_remapped():
+    from choleguard.classes import remap_endoscapes_semseg, IGNORE_INDEX
+    m = np.array([[0, 1, 2, 3], [4, 5, 6, 255]], dtype=np.uint8)
+    out = remap_endoscapes_semseg(m)
+    # bg, cystic_plate, calot_triangle, artery, duct, gallbladder, tool, ignore
+    assert out.tolist() == [[0, 6, 5, 4], [3, 2, 1, IGNORE_INDEX]]

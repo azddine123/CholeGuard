@@ -12,7 +12,9 @@ CLASSES = [
 ]
 NUM_CLASSES = len(CLASSES)
 
-# Endoscapes2023 category names (seg_label_map.txt / COCO categories) -> our ids
+IGNORE_INDEX = 255
+
+# Endoscapes2023 category names -> our ids
 ENDOSCAPES_TO_ID = {
     "Gallbladder": 2,
     "Cystic Duct": 3,
@@ -21,6 +23,16 @@ ENDOSCAPES_TO_ID = {
     "Cystic Plate": 6,
     "Tool": 1,
 }
+
+# Endoscapes semseg PNG ids (order of seg_label_map.txt) -> our ids; 255 = unlabeled
+_ENDOSCAPES_LUT = np.full(256, IGNORE_INDEX, dtype=np.uint8)
+for raw, ours in {0: 0, 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1}.items():
+    _ENDOSCAPES_LUT[raw] = ours
+
+
+def remap_endoscapes_semseg(mask: np.ndarray) -> np.ndarray:
+    """Convert an Endoscapes semseg id map to CholeGuard ids (255 kept as ignore)."""
+    return _ENDOSCAPES_LUT[mask]
 
 # CholecSeg8k colour-mask palette -> our ids (classes without equivalent -> 0)
 CHOLECSEG_RGB_TO_ID = {
