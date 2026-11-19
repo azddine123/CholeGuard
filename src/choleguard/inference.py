@@ -17,6 +17,7 @@ from .signal import CVSSignal, SignalState
 
 DEFAULT_FPS = 25.0
 TUNED_PERIOD_S = 5.0  # thresholds are tuned on expert keyframes sampled every 5 s
+MIN_TIME_CONSTANT_S = 3.0  # on continuous video, never display unsmoothed probabilities (anti-flicker)
 
 
 class OnnxModel:
@@ -64,11 +65,15 @@ class AnalysisResult:
         return d
 
 
-def rescale_for_period(t: Thresholds, tuned_period_s: float, period_s: float) -> Thresholds:
-    """Keep the same smoothing time-constant and confirmation duration at another update rate."""
+def rescale_for_period(t: Thresholds, tuned_period_s: float, period_s: float,
+                       min_time_constant_s: float = MIN_TIME_CONSTANT_S) -> Thresholds:
+    """Keep the tuned smoothing time-constant and confirmation duration at another update rate,
+    with a minimum smoothing time-constant so the video signal does not flicker."""
     k = tuned_period_s / period_s
-    return replace(t, ema_alpha=1 - (1 - t.ema_alpha) ** (1 / k) if t.ema_alpha < 1 else 1.0,
-                   n_consecutive=max(1, math.ceil(t.n_consecutive * k)))
+    alpha = 1 - (1 - t.ema_alpha) ** (1 / k) if t.ema_alpha < 1 else 1.0
+    if min_time_constant_s > 0:
+        alpha = min(alpha, 1 - math.exp(-period_s / min_time_constant_s))
+    return replace(t, ema_alpha=alpha, n_consecutive=max(1, math.ceil(t.n_consecutive * k)))
 
 
 def _read_fps(cap) -> float:

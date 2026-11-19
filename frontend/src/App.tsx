@@ -8,7 +8,7 @@ import { MaskToggles } from "./components/MaskToggles";
 import { SignalLight } from "./components/SignalLight";
 import { Timeline } from "./components/Timeline";
 import { frameAt } from "./lib/sync";
-import { transitions } from "./lib/timeline";
+import { keyMoments, transitions } from "./lib/timeline";
 import type { AnalysisResult } from "./lib/types";
 
 const SPEEDS = [0.25, 0.5, 1, 2, 5];
@@ -41,7 +41,7 @@ export default function App() {
   useEffect(() => { if (video.current) video.current.playbackRate = speed; }, [speed, src]);
 
   const frame = useMemo(() => (result ? frameAt(result.frames, t) : undefined), [result, t]);
-  const markers = useMemo(() => (result ? transitions(result.frames) : []), [result]);
+  const markers = useMemo(() => (result ? keyMoments(transitions(result.frames)) : []), [result]);
 
   const loadSample = async (name: string) => {
     setError(""); setResult(null);
@@ -127,7 +127,7 @@ export default function App() {
           </div>
           {src && (
             <div className="mt-3 flex items-center gap-3">
-              <button onClick={() => (video.current?.paused ? video.current.play() : video.current?.pause())} className="rounded-lg bg-slate-800 px-4 py-2 font-semibold hover:bg-slate-700">⏯ Lecture / pause</button>
+              <button onClick={() => (video.current?.paused ? video.current.play() : video.current?.pause())} className="rounded-lg bg-slate-800 px-4 py-2 font-semibold hover:bg-slate-700">▶ ❚❚  Lecture / pause</button>
               {SPEEDS.map((s) => (
                 <button key={s} onClick={() => setSpeed(s)} className={`rounded-lg px-3 py-2 text-sm ${speed === s ? "bg-cyan-600 text-white" : "bg-slate-800 hover:bg-slate-700"}`}>{s}×</button>
               ))}

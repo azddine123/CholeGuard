@@ -22,3 +22,13 @@ export function transitions(frames: FrameResult[]): Marker[] {
   }
   return out;
 }
+
+/** Short list for the report: first acquisition of each criterion + every GREEN onset. */
+export function keyMoments(markers: Marker[]): Marker[] {
+  const seen = new Set<string>();
+  return markers.filter((m) => {
+    if (m.kind === "green") return true;
+    if (m.kind === "acquired" && m.criterion && !seen.has(m.criterion)) { seen.add(m.criterion); return true; }
+    return false;
+  }).sort((a, b) => a.t - b.t);
+}

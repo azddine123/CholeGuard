@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { transitions } from "../lib/timeline";
+import { keyMoments, transitions } from "../lib/timeline";
 import type { FrameResult } from "../lib/types";
 
 const STATE_COLORS: Record<string, string> = { red: "#ef4444", orange: "#f59e0b", green: "#22c55e", uncertain: "#64748b" };
@@ -7,7 +7,7 @@ const STATE_COLORS: Record<string, string> = { red: "#ef4444", orange: "#f59e0b"
 interface Props { frames: FrameResult[]; duration: number; current: number; onSeek: (t: number) => void }
 
 export function Timeline({ frames, duration, current, onSeek }: Props) {
-  const markers = useMemo(() => transitions(frames), [frames]);
+  const markers = useMemo(() => keyMoments(transitions(frames)), [frames]);
   const segments = useMemo(() => {
     const out: { start: number; end: number; state: string }[] = [];
     frames.forEach((f, i) => {

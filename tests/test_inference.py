@@ -114,3 +114,23 @@ def test_rescale_for_period_keeps_confirmation_time():
     r = rescale_for_period(t, tuned_period_s=5.0, period_s=0.5)
     assert r.n_consecutive == t.n_consecutive * 10
     assert 0 < r.ema_alpha < t.ema_alpha
+
+
+def test_rescale_enforces_minimum_smoothing_on_video():
+    from dataclasses import replace
+    t = replace(load_thresholds("configs/thresholds.yaml"), ema_alpha=1.0, n_consecutive=1)
+    r = rescale_for_period(t, tuned_period_s=5.0, period_s=1.0, min_time_constant_s=3.0)
+    assert r.ema_alpha == pytest.approx(1 - np.exp(-1 / 3.0))
+
+
+def test_minimum_smoothing_reduces_flicker():
+    from dataclasses import replace
+    from choleguard.tuning import simulate
+    t = replace(load_thresholds("configs/thresholds.yaml"), ema_alpha=1.0, n_consecutive=1,
+                on_threshold=0.8, off_threshold=0.65, uncertain_low=0.6, uncertain_high=0.8)
+    rng = np.random.default_rng(1)
+    probs = np.clip(0.75 + rng.normal(0, 0.15, (120, 3)), 0, 1)
+    changes = lambda s: sum(a != b for a, b in zip(s, s[1:]))
+    raw = simulate(probs, rescale_for_period(t, 5.0, 1.0, min_time_constant_s=0))
+    smooth = simulate(probs, rescale_for_period(t, 5.0, 1.0, min_time_constant_s=3.0))
+    assert changes(smooth) < changes(raw) / 2

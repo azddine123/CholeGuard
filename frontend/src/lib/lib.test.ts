@@ -48,3 +48,18 @@ describe("transitions", () => {
     expect(m.filter((x) => x.kind === "lost").map((x) => [x.t, x.criterion])).toEqual([[6, "C3"]]);
   });
 });
+
+import { keyMoments } from "./timeline";
+
+describe("keyMoments", () => {
+  it("keeps green onsets and the first acquisition of each criterion, sorted", () => {
+    const m = keyMoments([
+      { t: 1, kind: "acquired", criterion: "C1" }, { t: 2, kind: "lost", criterion: "C1" },
+      { t: 3, kind: "acquired", criterion: "C1" }, { t: 4, kind: "acquired", criterion: "C2" },
+      { t: 5, kind: "green" }, { t: 30, kind: "green" },
+    ]);
+    expect(m.map((x) => [x.t, x.kind, x.criterion])).toEqual([
+      [1, "acquired", "C1"], [4, "acquired", "C2"], [5, "green", undefined], [30, "green", undefined],
+    ]);
+  });
+});

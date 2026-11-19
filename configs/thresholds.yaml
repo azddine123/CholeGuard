@@ -1,11 +1,11 @@
-# Decision thresholds. Initial values; re-tuned on the validation split only.
-ema_alpha: 0.3        # temporal smoothing factor
-on_threshold: 0.6     # criterion considered reached above this
-off_threshold: 0.45   # ...and lost only below this (hysteresis)
-uncertain_low: 0.4    # zone of doubt
-uncertain_high: 0.6
-n_consecutive: 8      # updates required before showing green
-blur_min: 30.0        # Laplacian variance below this -> image too blurry
-brightness_min: 25.0  # mean brightness outside this range -> unusable frame
+# Tuned on the validation split by scripts/evaluate.py — do not edit by hand.
+ema_alpha: 1.0
+on_threshold: 0.8
+off_threshold: 0.65
+uncertain_low: 0.6
+uncertain_high: 0.8
+n_consecutive: 1
+blur_min: 30.0
+brightness_min: 25.0
 brightness_max: 235.0
-stride: 2             # analyse one frame out of N
+stride: 2
