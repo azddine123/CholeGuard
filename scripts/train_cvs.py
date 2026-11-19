@@ -5,6 +5,7 @@ import json
 import numpy as np
 import torch
 
+from choleguard.calibration import fit_temperature
 from choleguard.data.endoscapes import EndoscapesCVSDataset
 from choleguard.data.transforms import get_transforms
 from choleguard.losses import cvs_loss
@@ -22,19 +23,6 @@ def predict_logits(model, dl, device, max_steps=0):
         logits.append(model(b["image"].to(device))["cvs_logits"].float().cpu())
         targets.append(b["cvs"]); vids += b["video_id"]; frames += b["frame_id"]
     return torch.cat(logits), torch.cat(targets), np.array(vids), np.array(frames)
-
-
-def fit_temperature(logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
-    log_t = torch.zeros(3, requires_grad=True)
-    opt = torch.optim.LBFGS([log_t], lr=0.1, max_iter=100)
-
-    def closure():
-        opt.zero_grad()
-        loss = torch.nn.functional.binary_cross_entropy_with_logits(logits / log_t.exp(), targets)
-        loss.backward()
-        return loss
-    opt.step(closure)
-    return log_t.exp().detach()
 
 
 def main():
