@@ -52,6 +52,8 @@ def bootstrap_ci(metric_fn: Callable, probs, targets, video_ids, n: int = 1000, 
         val = metric_fn(probs[idx], targets[idx])
         if not np.isnan(val):
             stats.append(val)
+    if not stats:
+        return float("nan"), float("nan")
     return float(np.quantile(stats, alpha / 2)), float(np.quantile(stats, 1 - alpha / 2))
 
 

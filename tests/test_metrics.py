@@ -58,3 +58,9 @@ def test_flicker_counts_state_changes():
     S = SignalState
     states = [S.RED, S.RED, S.ORANGE, S.RED, S.GREEN, S.GREEN]  # 3 changes
     assert flicker_per_minute(states, fps=1.0) == pytest.approx(3 / (6 / 60))
+
+
+def test_bootstrap_ci_all_undefined_returns_nan():
+    probs = np.zeros(10); targets = np.zeros(10); vids = np.repeat(np.arange(5), 2)
+    lo, hi = bootstrap_ci(lambda p, t: float("nan"), probs, targets, vids, n=20)
+    assert np.isnan(lo) and np.isnan(hi)
