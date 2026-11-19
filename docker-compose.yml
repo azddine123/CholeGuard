@@ -1,0 +1,7 @@
+services:
+  choleguard:
+    build: .
+    ports: ["8000:8000"]
+    volumes:
+      - ./models:/app/models:ro
+      - ./backend/samples:/app/backend/samples:ro
