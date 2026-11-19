@@ -12,3 +12,9 @@ __pycache__/
 node_modules/
 frontend/dist/
 .venv/
+
+# demo samples and models are built/downloaded, not committed (data licence)
+backend/samples/*.mp4
+backend/samples/*.json
+models/
+frontend/public/metrics.json
