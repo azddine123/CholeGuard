@@ -2,7 +2,7 @@
 docs/superpowers/
 .superpowers/
 # data / weights / artefacts
-data/
+/data/
 *.pt
 *.onnx
 *.zip
