@@ -9,13 +9,22 @@ if [ ! -d "$DATA/endoscapes" ]; then
   wget -q -O "$DATA/endoscapes.zip" https://s3.unistra.fr/camma_public/datasets/endoscapes/endoscapes.zip
   unzip -q "$DATA/endoscapes.zip" -d "$DATA" && rm "$DATA/endoscapes.zip"
 fi
-CHOLECSEG=$(python -c "import kagglehub; print(kagglehub.dataset_download('newslab/cholecseg8k'))")
+# CholecSeg8k: attached notebook input (commit runs cannot attach datasets via kagglehub)
+if [ -z "${CHOLECSEG:-}" ]; then
+  HIT=$(find /kaggle/input -maxdepth 6 -type f -name "*_endo_color_mask.png" -print -quit 2>/dev/null || true)
+  [ -n "$HIT" ] && CHOLECSEG=$(dirname "$(dirname "$(dirname "$HIT")")")
+fi
+if [ -z "${CHOLECSEG:-}" ]; then
+  CHOLECSEG=$(python -c "import kagglehub; print(kagglehub.dataset_download('newslab/cholecseg8k'))" 2>/dev/null || true)
+fi
+if [ -n "${CHOLECSEG:-}" ]; then PRE=(--cholecseg "$CHOLECSEG"); echo "CholecSeg8k: $CHOLECSEG";
+else PRE=(); echo "WARNING: CholecSeg8k not found, skipping pre-training"; fi
 
 python scripts/data_stats.py --root "$DATA/endoscapes" --out "$OUT/data_stats.json"
 
 # 1) segmentation — two CPU-fast candidates, keep the best on validation
 for BB in efficientnet-b2 mit_b0; do
-  python scripts/train_seg.py --endoscapes "$DATA/endoscapes" --cholecseg "$CHOLECSEG" --backbone "$BB" \
+  python scripts/train_seg.py --endoscapes "$DATA/endoscapes" "${PRE[@]}" --backbone "$BB" \
     --epochs-pre 4 --epochs 60 --bs 16 --workers 4 --out "$OUT/seg_$BB.pt" | tail -n 3
 done
 BEST=$(python - <<PY
