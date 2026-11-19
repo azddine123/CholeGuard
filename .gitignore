@@ -1,0 +1,14 @@
+# local working docs and tooling
+docs/superpowers/
+.superpowers/
+# data / weights / artefacts
+data/
+*.pt
+*.onnx
+*.zip
+__pycache__/
+*.egg-info/
+.pytest_cache/
+node_modules/
+frontend/dist/
+.venv/
