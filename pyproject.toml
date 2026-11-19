@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "choleguard"
+version = "0.1.0"
+description = "Anatomy-guided Critical View of Safety assistant for laparoscopic cholecystectomy"
+authors = [{ name = "Azddine EL HAMDAOUI" }]
+requires-python = ">=3.10"
+dependencies = ["numpy", "pyyaml", "opencv-python-headless", "onnxruntime"]
+
+[project.optional-dependencies]
+train = ["torch", "torchvision", "timm", "segmentation-models-pytorch", "albumentations", "scikit-learn"]
+api = ["fastapi", "uvicorn", "python-multipart"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
