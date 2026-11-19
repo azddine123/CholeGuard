@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "CholeGuard: anatomy-guided Critical View of Safety assistant for laparoscopic cholecystectomy"
+authors:
+  - family-names: "EL HAMDAOUI"
+    given-names: "Azddine"
+    affiliation: "ENSA Béni Mellal, Université Sultan Moulay Slimane"
+date-released: 2026-11-19
+repository-code: "https://github.com/azddine123/CholeGuard"
+license: "CC-BY-NC-SA-4.0"
+references:
+  - type: dataset
+    title: "Endoscapes2023"
+    authors:
+      - name: "CAMMA, University of Strasbourg"
+    url: "https://github.com/CAMMA-public/Endoscapes"
+  - type: dataset
+    title: "CholecSeg8k"
+    authors:
+      - name: "W.-Y. Hong et al."
