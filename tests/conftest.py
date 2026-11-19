@@ -53,3 +53,29 @@ def cholecseg_root(tmp_path):
     cm[:5] = (255, 255, 0)  # cystic duct (RGB)
     cv2.imwrite(str(d / "frame_80_endo_color_mask.png"), cv2.cvtColor(cm, cv2.COLOR_RGB2BGR))
     return tmp_path / "cholecseg8k"
+
+
+@pytest.fixture(scope="session")
+def dummy_onnx(tmp_path_factory):
+    """Tiny ONNX model with the real I/O contract (seg_probs [1,7,32,48], cvs_probs [1,3])."""
+    import torch
+
+    class Dummy(torch.nn.Module):
+        def forward(self, image):
+            seg = torch.zeros(image.shape[0], 7, 32, 48)
+            seg[:, 3] = 1.0
+            return seg + image[:, :1, :32, :48] * 0, torch.full((image.shape[0], 3), 0.9) + image.mean() * 0
+
+    p = tmp_path_factory.mktemp("onnx") / "dummy.onnx"
+    torch.onnx.export(Dummy(), torch.zeros(1, 3, 32, 48), p, input_names=["image"],
+                      output_names=["seg_probs", "cvs_probs"], opset_version=17, dynamo=False)
+    return p
+
+
+def write_video(path, n=6, fps=25.0, size=(96, 64)):
+    vw = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"MJPG"), fps, size)
+    rng = np.random.default_rng(0)
+    for _ in range(n):
+        vw.write((rng.random((size[1], size[0], 3)) * 255).astype(np.uint8))
+    vw.release()
+    return path
