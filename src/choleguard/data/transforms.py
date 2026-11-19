@@ -3,8 +3,7 @@ import albumentations as A
 import numpy as np
 import torch
 
-MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+from ..normalize import MEAN, STD
 
 
 def get_transforms(train: bool, size: tuple[int, int] = (256, 448)) -> A.Compose:

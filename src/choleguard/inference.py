@@ -11,7 +11,7 @@ import numpy as np
 import onnxruntime as ort
 
 from .config import Thresholds
-from .data.transforms import MEAN, STD
+from .normalize import MEAN, STD
 from .quality import image_quality
 from .signal import CVSSignal, SignalState
 
