@@ -5,7 +5,7 @@ off_threshold: 0.45   # ...and lost only below this (hysteresis)
 uncertain_low: 0.4    # zone of doubt
 uncertain_high: 0.6
 n_consecutive: 8      # updates required before showing green
-blur_min: 60.0        # Laplacian variance below this -> image too blurry
+blur_min: 30.0        # Laplacian variance below this -> image too blurry
 brightness_min: 25.0  # mean brightness outside this range -> unusable frame
 brightness_max: 235.0
 stride: 2             # analyse one frame out of N
